@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Simple AI Chat Tool - Professional Interface
 Supports streaming output, token counting, API configuration
@@ -8,6 +9,13 @@ import threading
 import os
 import re
 import datetime
+import sys
+
+# Fix encoding for Windows
+if sys.platform == 'win32':
+    import locale
+    locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
+
 from api_client import APIClient
 from prompts import get_system_prompt
 
@@ -91,7 +99,9 @@ class APIConfigDialog(ctk.CTkToplevel):
         self.transient(parent)
         self.grab_set()
         self.on_save = on_save_callback
-        self.env_path = os.path.join(os.path.dirname(__file__), '..', '.env')
+        
+        # Save config in user's home directory for persistence
+        self.env_path = os.path.join(os.path.expanduser("~"), ".aichat_config.env")
         
         self.update_idletasks()
         x = parent.winfo_x() + (parent.winfo_width() - 500) // 2
@@ -135,7 +145,7 @@ class APIConfigDialog(ctk.CTkToplevel):
     def load_config(self):
         try:
             if os.path.exists(self.env_path):
-                with open(self.env_path, 'r', encoding='utf-8') as f:
+                with open(self.env_path, 'r', encoding='utf-8', errors='ignore') as f:
                     for line in f:
                         if '=' in line and not line.startswith('#'):
                             k, v = line.strip().split('=', 1)
@@ -150,7 +160,7 @@ class APIConfigDialog(ctk.CTkToplevel):
             self.status.configure(text="❌ Fill all fields", text_color="#ff5555")
             return
         try:
-            with open(self.env_path, 'w', encoding='utf-8') as f:
+            with open(self.env_path, 'w', encoding='utf-8', errors='ignore') as f:
                 f.write(f"API_BASE_URL={url}\nAPI_KEY={key}\nMODEL_NAME={model}\n")
             self.status.configure(text="✅ Saved!", text_color="#50fa7b")
             if self.on_save: self.on_save()
@@ -208,6 +218,10 @@ class SimpleAIChat(ctk.CTk):
         top.pack_propagate(False)
 
         ctk.CTkLabel(top, text="🤖 AI Chat - xiaomimimoapi - Jokerwpx", font=("Arial", 14, "bold")).pack(side="left", padx=15, pady=10)
+        
+        # GitHub button
+        ctk.CTkButton(top, text="GitHub", width=70, height=28, font=("Arial", 11),
+            fg_color="#333", hover_color="#555", command=self.open_github).pack(side="left", padx=5)
         ctk.CTkButton(top, text="⚙️", width=40, height=32, font=("Arial", 16),
             fg_color="transparent", hover_color="#333355", command=self.open_settings).pack(side="right", padx=10)
 
@@ -273,6 +287,11 @@ class SimpleAIChat(ctk.CTk):
     def setup(self):
         self.use_real_api()
 
+    def open_github(self):
+        """Open GitHub repository"""
+        import webbrowser
+        webbrowser.open("https://github.com/joker123-wpx/Aichat-py-xiaomimimo-api.git")
+
     def on_paste(self, event=None):
         """Handle paste event - check for large code"""
         self.after(10, self.check_for_code_paste)
@@ -332,13 +351,15 @@ class SimpleAIChat(ctk.CTk):
         self.use_real_api()
 
     def use_real_api(self):
+        # Use config from user's home directory
+        config_path = os.path.join(os.path.expanduser("~"), ".aichat_config.env")
         try:
-            self.client = APIClient('.env')
+            self.client = APIClient(config_path)
             self.status_label.configure(text="● Connected", text_color="#50fa7b")
             self.add_system_msg(f"Connected: {self.client.model}")
         except Exception as e:
             self.status_label.configure(text="● Disconnected", text_color="#ff5555")
-            self.add_system_msg(f"❌ {e}")
+            self.add_system_msg(f"❌ {e}\nClick ⚙️ to configure API")
 
     def add_role_label(self, role, color):
         """Add role label with timestamp"""

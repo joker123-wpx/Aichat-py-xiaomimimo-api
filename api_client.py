@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Model API Client Module
 Supports custom API endpoints and streaming output
