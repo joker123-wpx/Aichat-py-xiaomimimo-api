@@ -79,8 +79,9 @@ def get_system_prompt() -> str:
 - Use clear variable naming
 
 ## Language
-- Respond in the same language as the user's question
-- Technical terms can keep English original with explanation if needed
+- 默认使用中文回复
+- 除非用户明确使用英文提问，否则始终用中文回答
+- 技术术语可以保留英文原文并附带中文解释
 
-Remember: Stay friendly, professional, and concise. Directly solve user's problems.
+记住：保持友好、专业、简洁。直接解决用户的问题。
 """
