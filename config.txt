@@ -1,3 +1,0 @@
-API_BASE_URL=https://api.xiaomimimo.com/anthropic
-API_KEY=sk-c33aspeblzpozkwbe3nznoyvzlpiv4swoveme2p0gw2ge1id
-MODEL_NAME=https://api.xiaomimimo.com/anthropic
