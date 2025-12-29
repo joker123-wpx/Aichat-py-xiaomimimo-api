@@ -124,14 +124,13 @@ def main():
         # Create uninstaller
         uninstall_bat = os.path.join(install_path, "uninstall.bat")
         with open(uninstall_bat, 'w', encoding='gbk') as f:
-            f.write(f'''@echo off
-echo 正在卸载 AI Chat...
-del "{desktop_lnk}" 2>nul
-del "{start_lnk}" 2>nul
-rd /s /q "{install_path}"
-echo 卸载完成!
-pause
-''')
+            f.write('@echo off\\n')
+            f.write('echo 正在卸载 AI Chat...\\n')
+            f.write('del "' + desktop_lnk + '" 2>nul\\n')
+            f.write('del "' + start_lnk + '" 2>nul\\n')
+            f.write('rd /s /q "' + install_path + '"\\n')
+            f.write('echo 卸载完成!\\n')
+            f.write('pause\\n')
         
         print()
         print("="*50)
